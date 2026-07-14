@@ -627,7 +627,7 @@ function App() {
   };
 
   const closeDetail = (event) => {
-    event.preventDefault();
+    event?.preventDefault();
 
     const url = new URL(window.location.href);
     url.searchParams.delete('pdfPage');
@@ -1073,7 +1073,7 @@ function App() {
       <section className={detailClass("power-grid-detail")} id="power-grid-detail" aria-label="电网 B/G 端业务系统项目详情">
         <div className="project-detail-page dashboard-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>UI/UX · Design System</span><h2>电网 B/G 端业务系统</h2><p>覆盖供用电全景监控平台与智慧电力大屏，以浅色科技与深色大屏两套视觉语言呈现电力运行、设备管理、故障告警和能效分析等业务场景。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭电网项目详情">×</a></header>
+          <header><div><span>UI/UX · Design System</span><h2>电网 B/G 端业务系统</h2><p>覆盖供用电全景监控平台与智慧电力大屏，以浅色科技与深色大屏两套视觉语言呈现电力运行、设备管理、故障告警和能效分析等业务场景。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭电网项目详情">×</button></header>
           <div className="dashboard-detail-gallery">
             {powerGridScreens.map(([src, title]) => (
               <figure className="dashboard-feature" key={src}>
@@ -1088,7 +1088,7 @@ function App() {
       <section className={detailClass("data-screen-detail")} id="data-screen-detail" aria-label="数据大屏项目详情">
         <div className="project-detail-page dashboard-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>Government UX · Data Visualization</span><h2>政务与制造数据大屏设计</h2><p>覆盖省级数据中心、智慧园区、入厂物流、生产节拍、物料齐套率、会议室与人才管理等已上线大屏，以统一科技蓝视觉语言承载复杂业务数据。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭数据大屏项目详情">×</a></header>
+          <header><div><span>Government UX · Data Visualization</span><h2>政务与制造数据大屏设计</h2><p>覆盖省级数据中心、智慧园区、入厂物流、生产节拍、物料齐套率、会议室与人才管理等已上线大屏，以统一科技蓝视觉语言承载复杂业务数据。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭数据大屏项目详情">×</button></header>
           <div className="dashboard-detail-gallery">
             {dataScreens.map(([src, title], index) => (
               <figure className={index === 0 ? 'dashboard-feature' : ''} key={src}>
@@ -1103,7 +1103,7 @@ function App() {
       <section className={detailClass("feishu-detail")} id="feishu-detail" aria-label="飞书智能制造项目详情">
         <div className="project-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>Feishu · Brand & Product Design</span><h2>飞书品牌与智能制造平台设计</h2><p>覆盖品牌视觉、AI 部署平台、移动端制造入口与多维系统监控的完整设计展示。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭项目详情">×</a></header>
+          <header><div><span>Feishu · Brand & Product Design</span><h2>飞书品牌与智能制造平台设计</h2><p>覆盖品牌视觉、AI 部署平台、移动端制造入口与多维系统监控的完整设计展示。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭项目详情">×</button></header>
           <div className="detail-gallery">
             <figure className="detail-wide"><img loading="lazy" decoding="async" {...responsiveImage('/assets/deployment-platform.jpeg')} alt="人工智能开发与部署平台视觉设计" /><figcaption>AI 开发与部署平台</figcaption></figure>
             <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/smart-manufacturing.png')} alt="智能制造移动端首页" /><figcaption>智能制造移动端</figcaption></figure>
@@ -1119,7 +1119,7 @@ function App() {
       <section className={detailClass("fande-detail")} id="fande-detail" aria-label="方德证券品牌视觉识别系统规范手册">
         <div className="project-detail-page pdf-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>Founder Securities · Enterprise VI Visual System</span><h2>方德证券品牌视觉识别系统</h2><p>方德证券品牌视觉识别系统规范手册。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭方德证券品牌书">×</a></header>
+          <header><div><span>Founder Securities · Enterprise VI Visual System</span><h2>方德证券品牌视觉识别系统</h2><p>方德证券品牌视觉识别系统规范手册。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭方德证券品牌书">×</button></header>
           {activeDetailHash === '#fande-detail' && <ProtectedPdfViewer pages={pdfPreviewManifest.fande.pages} mobilePages={pdfPreviewManifest.fande.mobilePages} title="方德证券品牌视觉识别系统规范手册" initialPage={pdfPage} onPageChange={updatePdfPage} />}
         </div>
       </section>
@@ -1127,7 +1127,7 @@ function App() {
       <section className={detailClass("portfolio-detail")} id="portfolio-detail" aria-label="部分 UI 作品集在线预览">
         <div className="project-detail-page pdf-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>UI/UX · Selected Work</span><h2>部分 UI 作品集</h2><p>在线预览仅供浏览，禁止下载、打印和保存。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭作品集预览">×</a></header>
+          <header><div><span>UI/UX · Selected Work</span><h2>部分 UI 作品集</h2><p>在线预览仅供浏览，禁止下载、打印和保存。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭作品集预览">×</button></header>
           {activeDetailHash === '#portfolio-detail' && <ProtectedPdfViewer pages={pdfPreviewManifest.portfolio.pages} mobilePages={pdfPreviewManifest.portfolio.mobilePages} title="熊鹏程部分 UI 作品集" initialPage={pdfPage} onPageChange={updatePdfPage} />}
         </div>
       </section>
@@ -1135,7 +1135,7 @@ function App() {
       <section className={detailClass("manual-detail")} id="manual-detail" aria-label="AppOS 品牌视觉手册项目详情">
         <div className="project-detail-page ecommerce-detail-page manual-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>AppOS · Brand Visual Manual</span><h2>AppOS 品牌视觉手册</h2><p>围绕品牌理念、标志与字体、产品包装、摄影方向、零售体验和跨平台应用，建立完整且统一的视觉设计体系。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭 AppOS 品牌视觉手册详情">×</a></header>
+          <header><div><span>AppOS · Brand Visual Manual</span><h2>AppOS 品牌视觉手册</h2><p>围绕品牌理念、标志与字体、产品包装、摄影方向、零售体验和跨平台应用，建立完整且统一的视觉设计体系。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭 AppOS 品牌视觉手册详情">×</button></header>
           <div className="ecommerce-detail-gallery manual-detail-gallery">
             {[['5348', '品牌视觉手册封面'], ['5349', '品牌概念与视觉原则'], ['5350', '标志系统与字体规范'], ['5351', '产品细节偏执与包装探索'], ['5352', '编辑风格摄影'], ['5353', '沉浸式零售体验'], ['5354', '跨平台品牌应用'], ['5355', '视觉实验与品牌延展']].map(([id, title]) => <figure key={id}><img loading="lazy" decoding="async" {...responsiveImage(`/assets/IMG_${id}.jpeg`)} alt={`AppOS ${title}`} /><figcaption><strong>{title}</strong><span>AppOS Brand Visual Manual</span></figcaption></figure>)}
             {[['5336', '君子养成'], ['5337', '喝茶问祖'], ['5338', '皮囊'], ['5339', '了凡四训'], ['5344', '富养'], ['5346', '人生很长，你慢慢走']].map(([id, title]) => <figure key={id}><img loading="lazy" decoding="async" {...responsiveImage(`/assets/IMG_${id}.jpeg`)} alt={`${title}书籍设计效果图`} /><figcaption><strong>{title}</strong><span>Book Design Showcase</span></figcaption></figure>)}
@@ -1146,7 +1146,7 @@ function App() {
       <section className={detailClass("ppt-detail")} id="ppt-detail" aria-label="科技商务 PPT 视觉设计项目详情">
         <div className="project-detail-page ppt-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>PPT Design · Technology & Business</span><h2>科技商务 PPT 视觉设计</h2><p>围绕人工智能、数据治理、云计算、存储设备与电商 SaaS 等主题，以清晰的信息层级、统一的科技蓝视觉语言和场景化三维表达，构建兼具专业性与传播力的商业演示体系。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭项目详情">×</a></header>
+          <header><div><span>PPT Design · Technology & Business</span><h2>科技商务 PPT 视觉设计</h2><p>围绕人工智能、数据治理、云计算、存储设备与电商 SaaS 等主题，以清晰的信息层级、统一的科技蓝视觉语言和场景化三维表达，构建兼具专业性与传播力的商业演示体系。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭项目详情">×</button></header>
           <div className="ppt-detail-gallery">
             <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-data-quality.jpg')} alt="数据治理与质量解决方案 PPT 设计" /><figcaption><strong>数据治理与质量方案</strong><span>围绕数据安全、风险评估、生命周期防护与技术支撑，梳理复杂内容层级。</span></figcaption></figure>
             <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-tech-support.jpg')} alt="技术支撑体系与保障措施 PPT 设计" /><figcaption><strong>技术支撑与实施保障</strong><span>将平台架构、实施路径和保障机制转化为直观、可扫描的信息图表。</span></figcaption></figure>
@@ -1163,7 +1163,7 @@ function App() {
       <section className={detailClass("poster-detail")} id="poster-detail" aria-label="商业海报封面设计项目详情">
         <div className="project-detail-page ecommerce-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>Poster Cover · Visual Design</span><h2>商业海报封面设计</h2><p>覆盖企业系统上线、技术培训、流程介绍与课程传播等场景，通过清晰信息层级、主题化配色与多样视觉风格，提升内部传播的识别度与阅读效率。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭商业海报封面设计详情">×</a></header>
+          <header><div><span>Poster Cover · Visual Design</span><h2>商业海报封面设计</h2><p>覆盖企业系统上线、技术培训、流程介绍与课程传播等场景，通过清晰信息层级、主题化配色与多样视觉风格，提升内部传播的识别度与阅读效率。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭商业海报封面设计详情">×</button></header>
           <div className="ecommerce-detail-gallery poster-detail-gallery">
             {posterDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}海报设计`} /><figcaption><strong>{title}</strong><span>Commercial Poster Cover Design</span></figcaption></figure>)}
           </div>
@@ -1173,7 +1173,7 @@ function App() {
       <section className={detailClass("ecommerce-detail")} id="ecommerce-detail" aria-label="电商产品视觉设计项目详情">
         <div className="project-detail-page ecommerce-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>E-commerce · Campaign Key Visual</span><h2>电商产品视觉设计</h2><p>覆盖宠物食品、快消饮品、食品餐饮、厨具、户外装备、男士护肤、智能家电与消费电子等品类，通过场景化产品表达、卖点分层和差异化视觉语言强化品牌识别与购买转化。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭项目详情">×</a></header>
+          <header><div><span>E-commerce · Campaign Key Visual</span><h2>电商产品视觉设计</h2><p>覆盖宠物食品、快消饮品、食品餐饮、厨具、户外装备、男士护肤、智能家电与消费电子等品类，通过场景化产品表达、卖点分层和差异化视觉语言强化品牌识别与购买转化。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭项目详情">×</button></header>
           <div className="ecommerce-detail-gallery">
             {[
               ['01', '宠物营养猫条', '深海胶原猫条的节庆促销、成分卖点与详情页视觉。'],
@@ -1208,7 +1208,7 @@ function App() {
       <section className={detailClass("ip-display-detail")} id="ip-display-detail" aria-label="商业IP美陈与插画设计项目详情">
         <div className="project-detail-page ecommerce-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>Commercial IP Display &amp; Illustration Design</span><h2>商业IP美陈&插画设计</h2><p>覆盖品牌 IP 塑造、门店空间、商业美陈、包装周边与活动插画，以统一且鲜明的视觉语言连接产品、空间与品牌体验。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭商业IP美陈与插画设计详情">×</a></header>
+          <header><div><span>Commercial IP Display &amp; Illustration Design</span><h2>商业IP美陈&插画设计</h2><p>覆盖品牌 IP 塑造、门店空间、商业美陈、包装周边与活动插画，以统一且鲜明的视觉语言连接产品、空间与品牌体验。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭商业IP美陈与插画设计详情">×</button></header>
           <div className="ecommerce-detail-gallery ip-display-detail-gallery">
             {ipDisplayDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}效果图`} /><figcaption><strong>{title}</strong><span>Commercial IP Display &amp; Illustration Design</span></figcaption></figure>)}
           </div>
@@ -1218,7 +1218,7 @@ function App() {
       <section className={detailClass("logo-space-detail")} id="logo-space-detail" aria-label="LOGO、门店与文化墙设计项目详情">
         <div className="project-detail-page ecommerce-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>Logo, Storefront &amp; Culture Wall Design</span><h2>LOGO&门店&文化墙设计</h2><p>覆盖品牌标志、门店门头、商业空间与企业文化墙设计，以清晰识别、空间秩序和场景化表达强化品牌形象与线下体验。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭 LOGO、门店与文化墙设计详情">×</a></header>
+          <header><div><span>Logo, Storefront &amp; Culture Wall Design</span><h2>LOGO&门店&文化墙设计</h2><p>覆盖品牌标志、门店门头、商业空间与企业文化墙设计，以清晰识别、空间秩序和场景化表达强化品牌形象与线下体验。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭 LOGO、门店与文化墙设计详情">×</button></header>
           <div className="ecommerce-detail-gallery logo-space-detail-gallery">
             {logoSpaceDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}效果图`} /><figcaption><strong>{title}</strong><span>Logo, Storefront &amp; Culture Wall Design</span></figcaption></figure>)}
           </div>
@@ -1228,7 +1228,7 @@ function App() {
       <section className={detailClass("packaging-detail")} id="packaging-detail" aria-label="食品包装设计项目详情">
         <div className="project-detail-page ecommerce-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
-          <header><div><span>Packaging Design · Food &amp; Consumer Goods</span><h2>食品包装设计</h2><p>围绕休闲食品、方便速食与烘焙产品，以鲜明的品类识别、真实食欲表达和清晰卖点层级，建立兼顾货架吸引力与品牌记忆的包装视觉体系。</p></div><a className="detail-close" href="#projects" onClick={closeDetail} aria-label="关闭包装设计详情">×</a></header>
+          <header><div><span>Packaging Design · Food &amp; Consumer Goods</span><h2>食品包装设计</h2><p>围绕休闲食品、方便速食与烘焙产品，以鲜明的品类识别、真实食欲表达和清晰卖点层级，建立兼顾货架吸引力与品牌记忆的包装视觉体系。</p></div><button type="button" className="detail-close" onClick={closeDetail} aria-label="关闭包装设计详情">×</button></header>
           <div className="ecommerce-detail-gallery packaging-detail-gallery">
             {[
               ['01', '青花椒烤鱼', '高饱和黄蓝配色突出椒麻风味与餐厅级产品体验。'],

@@ -1752,9 +1752,12 @@ a {
   height: 48px;
   display: grid;
   place-items: center;
+  border: 0;
   border-radius: 50%;
   color: white;
   background: #07101f;
+  cursor: pointer;
+  font: inherit;
   font-size: 30px;
   box-shadow: 0 14px 35px rgba(7,16,31,.22);
 }
