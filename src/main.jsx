@@ -12,6 +12,23 @@ ScrollTrigger.config({ limitCallbacks: true, ignoreMobileResize: true });
 
 const SideRays = lazy(() => import('./SideRays'));
 
+class OptionalVisualBoundary extends Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    console.warn('Optional visual effect disabled:', error);
+  }
+
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
+
 class AppErrorBoundary extends Component {
   state = { hasError: false };
 
@@ -276,9 +293,11 @@ function DeferredSideRays(props) {
 
   if (!shouldRender) return null;
   return (
-    <Suspense fallback={null}>
-      <SideRays {...props} />
-    </Suspense>
+    <OptionalVisualBoundary>
+      <Suspense fallback={null}>
+        <SideRays {...props} />
+      </Suspense>
+    </OptionalVisualBoundary>
   );
 }
 

@@ -41,6 +41,22 @@ img {
   user-drag: none;
 }
 
+.side-rays-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.side-rays-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
 @media print {
   body {
     display: none;

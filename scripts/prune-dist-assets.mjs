@@ -20,7 +20,7 @@ const shouldKeep = (relativePath) => (
   relativePath.startsWith('optimized/')
   || relativePath.startsWith('pdf-pages/')
   || (referencedAssets.has(relativePath) && !hasOptimizedReplacement(relativePath))
-  || relativePath.startsWith('index-')
+  || ['.js', '.css'].includes(extname(relativePath).toLowerCase())
 );
 
 const hasOptimizedReplacement = (relativePath) => {
