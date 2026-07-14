@@ -865,6 +865,7 @@ function App() {
         <div className="hero-overlay" />
         <div className="hero-content">
           <p className="eyebrow">Senior Visual Designer · Portfolio 2026</p>
+          <p className="mobile-view-note">手机端受屏幕尺寸限制，部分整体视觉与图片细节会压缩展示，建议使用电脑端查看完整效果。</p>
           <h1>
             <SplitText tag="span" className="hero-title-line" text="设计高效、" delay={42} />
             <SplitText tag="span" className="hero-title-line hero-title-blue" text="简洁而有力量" delay={42} />
