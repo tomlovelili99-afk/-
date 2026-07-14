@@ -2784,6 +2784,19 @@ a {
     padding: 0 18px;
   }
 
+  .hero-actions .primary-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    border-radius: 14px;
+  }
+
+  .hero-actions .ghost-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .68);
+  }
+
   .about,
   .experience,
   .projects,
@@ -2816,17 +2829,125 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .projects {
+    position: relative;
+    padding-inline: 14px;
+    background:
+      linear-gradient(180deg, rgba(247, 251, 255, .96), rgba(255, 255, 255, .98)),
+      radial-gradient(circle at 100% 0%, rgba(20, 93, 255, .1), transparent 16rem);
+  }
+
+  .projects .section-heading {
+    margin-bottom: 22px;
+  }
+
+  .projects .section-heading.split {
+    display: grid;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .projects .section-heading h2 {
+    max-width: 100%;
+    font-size: clamp(30px, 8.2vw, 34px);
+    line-height: 1.08;
+  }
+
+  .projects .section-heading .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .projects .section-heading .ghost-btn.small {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    border-color: rgba(20, 93, 255, .18);
+    border-radius: 14px;
+    background: rgba(236, 245, 255, .82);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.78);
+  }
+
+  .project-grid,
+  .project-subgrid,
+  .compact-projects {
+    gap: 14px;
+  }
+
+  .project-card,
+  .feishu-showcase,
+  .poster-showcase {
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .86);
+    box-shadow: 0 14px 38px rgba(21, 60, 130, .09);
+  }
+
+  .project-visual,
+  .poster-gallery {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 1.28 / 1;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .project-image,
+  .poster-gallery img {
+    object-fit: cover;
+    background: #eef7ff;
+  }
+
+  .project-info {
+    padding: 16px 16px 18px;
+  }
+
+  .project-info span {
+    display: block;
+    font-size: 11px;
+    line-height: 1.45;
+    font-weight: 800;
+  }
+
+  .project-info h3 {
+    margin: 7px 0 8px;
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .project-info p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .project-entry::after,
+  .feishu-entry::after,
+  .showcase-clickable::after {
+    opacity: 1;
+    transform: none;
+    right: 12px;
+    top: 12px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    background: rgba(5, 12, 24, .76);
+  }
+
   .feishu-gallery {
-    height: 360px;
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    height: auto;
+    aspect-ratio: 1.28 / 1;
+    display: grid;
+    overflow: hidden;
+    padding: 0;
+    background: #eef7ff;
   }
 
   .feishu-gallery a {
-    flex: 0 0 78%;
+    flex: none;
     aspect-ratio: auto;
-    scroll-snap-align: start;
+    border-radius: 0;
+  }
+
+  .feishu-gallery img {
+    object-fit: cover;
   }
 
   .project-detail-overlay {
@@ -2940,14 +3061,45 @@ a {
   .footer-meta span:last-child::before { text-align: left; justify-self: start; }
 
   .hero-stats {
-    gap: 12px;
-    margin-top: 40px;
+    display: flex;
+    gap: 8px;
+    margin-top: 28px;
+    padding: 8px;
+    overflow-x: auto;
+    border: 1px solid rgba(20, 93, 255, .1);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .58);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .hero-stats::-webkit-scrollbar {
+    display: none;
   }
 
   .hero-stats div {
+    flex: 0 0 43%;
+    min-width: 122px;
+    padding: 12px 10px;
     border-left: 0;
-    border-top: 1px solid var(--line);
-    padding: 14px 0 0;
+    border-top: 0;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(239,246,255,.78));
+    scroll-snap-align: start;
+  }
+
+  .hero-stats strong {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .hero-stats span {
+    margin-top: 5px;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #607086;
   }
 
   .hero-panel-image {
