@@ -2704,24 +2704,54 @@ a {
   }
 
   .site-header {
-    height: 62px;
+    height: auto;
+    min-height: 104px;
     border-radius: 18px;
-    padding: 0 10px 0 12px;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    grid-template-rows: 42px 34px;
+    align-items: center;
+    padding: 10px;
+    gap: 8px 10px;
     width: min(calc(100% - 14px), var(--max));
-    overflow: hidden;
+    overflow: visible;
   }
 
   .site-header.is-scrolled {
     top: 8px;
     width: min(calc(100% - 14px), var(--max));
-    height: 58px;
+    height: auto;
+    min-height: 98px;
     border-radius: 18px;
+  }
+
+  .site-header nav {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 14px;
+    background: rgba(240, 247, 255, .72);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .82);
+    font-size: 12px;
+  }
+
+  .site-header nav a {
+    width: 100%;
+    min-width: 0;
+    height: 28px;
+    padding: 0 4px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 700;
   }
 
   .brand {
     min-width: 0;
-    flex: 1 1 auto;
+    width: 100%;
     gap: 8px;
   }
 
@@ -2740,6 +2770,8 @@ a {
   }
 
   .nav-cta {
+    grid-column: 2;
+    grid-row: 1;
     flex: 0 0 42px;
     width: 42px;
     height: 42px;
@@ -2766,7 +2798,7 @@ a {
   .experience,
   .projects,
   .strengths {
-    padding: 82px 16px 24px;
+    padding: 126px 16px 24px;
     max-width: 100%;
   }
 
@@ -2880,6 +2912,7 @@ a {
   .experience,
   .projects,
   .strengths {
+    scroll-margin-top: 118px;
     padding-top: 28px;
   }
 
@@ -3279,5 +3312,38 @@ a {
 
   .project-visual {
     min-height: 230px;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-header {
+    min-height: 100px;
+    padding: 9px;
+    gap: 7px 8px;
+  }
+
+  .site-header nav {
+    gap: 3px;
+    padding: 3px;
+  }
+
+  .site-header nav a {
+    height: 27px;
+    font-size: 11px;
+    padding: 0 2px;
+  }
+
+  .brand strong {
+    font-size: 14px;
+  }
+
+  .brand-photo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nav-cta {
+    width: 40px;
+    height: 40px;
   }
 }
