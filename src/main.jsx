@@ -86,7 +86,7 @@ const asset = (path) => {
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
   return `/assets/optimized/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 
@@ -95,7 +95,7 @@ const mobileAsset = (path) => {
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
   return `/assets/optimized/mobile/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 
@@ -104,7 +104,7 @@ const compactAsset = (path) => {
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
   return `/assets/optimized/compact/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 

@@ -12,7 +12,7 @@ const variants = [
   { dir: mobileOutputDir, width: 720, quality: 68, label: 'mobile' },
   { dir: compactOutputDir, width: 480, quality: 62, label: 'compact' },
 ];
-const imageExts = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+const imageExts = new Set(['.jpg', '.jpeg', '.png']);
 
 variants.forEach(({ dir }) => mkdirSync(dir, { recursive: true }));
 
