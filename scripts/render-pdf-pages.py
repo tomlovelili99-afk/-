@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render private source PDFs into public WebP page previews."""
+"""Render private source PDFs into public JPG page previews."""
 
 from __future__ import annotations
 
@@ -20,8 +20,14 @@ PDFS = {
     "fande": SOURCE_DIR / "fande-securities-brand-book.pdf",
 }
 RENDER_SETTINGS = {
-    "portfolio": {"dpi": "360", "quality": "94"},
-    "fande": {"dpi": "160", "quality": "88"},
+    "portfolio": {
+        "desktop": {"dpi": "360", "quality": "94"},
+        "mobile": {"dpi": "220", "quality": "84"},
+    },
+    "fande": {
+        "desktop": {"dpi": "160", "quality": "80"},
+        "mobile": {"dpi": "72", "quality": "74"},
+    },
 }
 PDFTOPPM = shutil.which("pdftoppm")
 PDFINFO = shutil.which("pdfinfo")
@@ -41,22 +47,23 @@ def page_count(path: Path) -> int:
     raise RuntimeError(f"Could not read page count for {path}")
 
 
-def render_pdf(slug: str, pdf_path: Path) -> dict[str, object]:
-    if not pdf_path.exists():
-        raise FileNotFoundError(pdf_path)
-
-    output_dir = OUTPUT_ROOT / slug
-    settings = RENDER_SETTINGS.get(slug, {"dpi": "180", "quality": "90"})
-    total = page_count(pdf_path)
+def render_variant(
+    slug: str,
+    pdf_path: Path,
+    total: int,
+    settings: dict[str, str],
+    output_dir: Path,
+    public_prefix: str,
+    label: str,
+) -> list[str]:
     pages: list[str] = []
 
-    with tempfile.TemporaryDirectory(prefix=f"{slug}-pages-") as temp_name, tempfile.TemporaryDirectory(prefix=f"{slug}-webp-") as webp_name:
+    with tempfile.TemporaryDirectory(prefix=f"{slug}-{label}-pages-") as temp_name:
         temp_dir = Path(temp_name)
-        webp_dir = Path(webp_name)
 
         for index in range(1, total + 1):
             page_name = f"page-{index:03}.jpg"
-            prefix = webp_dir / f"page-{index:03}"
+            prefix = temp_dir / f"page-{index:03}"
             subprocess.run(
                 [
                     PDFTOPPM,
@@ -77,19 +84,61 @@ def render_pdf(slug: str, pdf_path: Path) -> dict[str, object]:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            pages.append(f"/assets/pdf-pages/{slug}/{page_name}")
+            pages.append(f"{public_prefix}/{page_name}")
             if index == 1 or index == total or index % 10 == 0:
-                print(f"{slug}: rendered {index}/{total} pages", flush=True)
+                print(f"{slug} {label}: rendered {index}/{total} pages", flush=True)
 
         if len(pages) != total:
-            raise RuntimeError(f"{slug}: expected {total} pages, rendered {len(pages)}")
+            raise RuntimeError(f"{slug} {label}: expected {total} pages, rendered {len(pages)}")
 
         if output_dir.exists():
             shutil.rmtree(output_dir)
-        os.replace(webp_dir, output_dir)
+        output_dir.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(temp_dir, output_dir)
+
+    return pages
+
+
+def render_pdf(slug: str, pdf_path: Path) -> dict[str, object]:
+    if not pdf_path.exists():
+        raise FileNotFoundError(pdf_path)
+
+    output_dir = OUTPUT_ROOT / slug
+    mobile_dir = output_dir / "mobile"
+    settings = RENDER_SETTINGS.get(
+        slug,
+        {
+            "desktop": {"dpi": "180", "quality": "90"},
+            "mobile": {"dpi": "112", "quality": "78"},
+        },
+    )
+    total = page_count(pdf_path)
+    temp_desktop_dir = output_dir.with_name(f".{slug}-desktop-temp")
+    pages = render_variant(
+        slug,
+        pdf_path,
+        total,
+        settings["desktop"],
+        temp_desktop_dir,
+        f"/assets/pdf-pages/{slug}",
+        "desktop",
+    )
+    mobile_pages = render_variant(
+        slug,
+        pdf_path,
+        total,
+        settings["mobile"],
+        temp_desktop_dir / "mobile",
+        f"/assets/pdf-pages/{slug}/mobile",
+        "mobile",
+    )
+
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    os.replace(temp_desktop_dir, output_dir)
 
     print(f"Rendered {slug}: {total} pages", flush=True)
-    return {"pages": pages, "pageCount": total}
+    return {"pages": pages, "mobilePages": mobile_pages, "pageCount": total}
 
 
 def main() -> None:

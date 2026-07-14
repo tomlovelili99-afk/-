@@ -5,13 +5,16 @@ import sharp from 'sharp';
 const root = process.cwd();
 const assetsDir = join(root, 'public', 'assets');
 const outputDir = join(assetsDir, 'optimized');
-const maxWidth = 1800;
-const quality = 82;
+const mobileOutputDir = join(outputDir, 'mobile');
+const variants = [
+  { dir: outputDir, width: 1800, quality: 82, label: 'desktop' },
+  { dir: mobileOutputDir, width: 960, quality: 76, label: 'mobile' },
+];
 const imageExts = new Set(['.jpg', '.jpeg', '.png']);
 
-mkdirSync(outputDir, { recursive: true });
+variants.forEach(({ dir }) => mkdirSync(dir, { recursive: true }));
 
-const optimize = async (source, output) => {
+const optimize = async (source, output, variant) => {
   const sourceStats = statSync(source);
   if (statSync(output, { throwIfNoEntry: false })?.mtimeMs >= sourceStats.mtimeMs) {
     return false;
@@ -19,15 +22,15 @@ const optimize = async (source, output) => {
 
   const image = sharp(source, { failOn: 'none' }).rotate();
   const metadata = await image.metadata();
-  const shouldResize = metadata.width && metadata.width > maxWidth;
+  const shouldResize = metadata.width && metadata.width > variant.width;
 
   let pipeline = image;
   if (shouldResize) {
-    pipeline = pipeline.resize({ width: maxWidth, withoutEnlargement: true });
+    pipeline = pipeline.resize({ width: variant.width, withoutEnlargement: true });
   }
 
   await pipeline.jpeg({
-    quality,
+    quality: variant.quality,
     mozjpeg: true,
     progressive: true,
   }).toFile(output);
@@ -46,9 +49,11 @@ for (const file of readdirSync(assetsDir)) {
   if (!imageExts.has(ext)) continue;
 
   const name = basename(file, ext);
-  const output = join(outputDir, `${name}.jpg`);
-  if (await optimize(source, output)) optimized += 1;
-  else skipped += 1;
+  for (const variant of variants) {
+    const output = join(variant.dir, `${name}.jpg`);
+    if (await optimize(source, output, variant)) optimized += 1;
+    else skipped += 1;
+  }
 }
 
-console.log(`Optimized ${optimized} gallery assets to public/assets/optimized. Skipped ${skipped} unchanged assets.`);
+console.log(`Optimized ${optimized} gallery asset variants to public/assets/optimized. Skipped ${skipped} unchanged variants.`);

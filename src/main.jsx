@@ -90,6 +90,26 @@ const asset = (path) => {
   return `/assets/optimized/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 
+const mobileAsset = (path) => {
+  if (!path.startsWith('/assets/') || path.startsWith('/assets/pdf-pages/')) return path;
+  const extensionIndex = path.lastIndexOf('.');
+  if (extensionIndex === -1) return path;
+  const extension = path.slice(extensionIndex + 1).toLowerCase();
+  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
+  return `/assets/optimized/mobile/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
+};
+
+const responsiveImage = (path, sizes = '(max-width: 720px) 92vw, (max-width: 1180px) 46vw, 620px') => {
+  const src = asset(path);
+  const mobileSrc = mobileAsset(path);
+  if (src === path || mobileSrc === path) return { src };
+  return {
+    src,
+    srcSet: `${mobileSrc} 960w, ${src} 1800w`,
+    sizes,
+  };
+};
+
 const aboutHighlights = [
   ['资深从业背景', '11 年全品类视觉设计经验，设计科班出身，累计主导交付 1200 + 完整设计项目，覆盖互联网产品、商业品牌、文创周边等多元领域'],
   ['全链路界面设计', '可独立完成 UI/UX 设计、B/G 端后台、PC 端网页、APP / 小程序、数据大屏、交互动效设计，精通从用户调研、竞品分析、交互原型到视觉落地的完整产品设计流程'],
@@ -301,10 +321,14 @@ function DeferredSideRays(props) {
   );
 }
 
-function ProtectedPdfViewer({ pages = [], title, initialPage = 1, onPageChange }) {
+function ProtectedPdfViewer({ pages = [], mobilePages = [], title, initialPage = 1, onPageChange }) {
   const pageCount = pages.length;
   const [pageNumber, setPageNumber] = useState(Math.min(Math.max(1, initialPage), pageCount || 1));
   const [status, setStatus] = useState('loading');
+  const [useMobilePages, setUseMobilePages] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
+  ));
+  const activePages = useMobilePages && mobilePages.length === pageCount ? mobilePages : pages;
 
   const blockPdfActions = (event) => event.preventDefault();
 
@@ -322,12 +346,20 @@ function ProtectedPdfViewer({ pages = [], title, initialPage = 1, onPageChange }
   }, [initialPage, pageCount]);
 
   useEffect(() => {
-    [pages[pageNumber - 2], pages[pageNumber]].filter(Boolean).forEach((src) => {
+    const query = window.matchMedia('(max-width: 720px)');
+    const update = () => setUseMobilePages(query.matches);
+    update();
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
+  }, []);
+
+  useEffect(() => {
+    [activePages[pageNumber - 2], activePages[pageNumber]].filter(Boolean).forEach((src) => {
       const image = new Image();
       image.decoding = 'async';
       image.src = src;
     });
-  }, [pageNumber, pages]);
+  }, [pageNumber, activePages]);
 
   if (!pageCount) {
     return (
@@ -341,7 +373,7 @@ function ProtectedPdfViewer({ pages = [], title, initialPage = 1, onPageChange }
     );
   }
 
-  const pageSrc = pages[pageNumber - 1];
+  const pageSrc = activePages[pageNumber - 1];
 
   return (
     <div className="pdf-reader-shell" onContextMenu={blockPdfActions} onDragStart={blockPdfActions} onCopy={blockPdfActions}>
@@ -922,12 +954,12 @@ function App() {
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>Feishu · Brand & Product Design</span><h2>飞书品牌与智能制造平台设计</h2><p>覆盖品牌视觉、AI 部署平台、移动端制造入口与多维系统监控的完整设计展示。</p></div><a className="detail-close" href="#projects" aria-label="关闭项目详情">×</a></header>
           <div className="detail-gallery">
-            <figure className="detail-wide"><img loading="lazy" decoding="async" src={asset('/assets/deployment-platform.jpeg')} alt="人工智能开发与部署平台视觉设计" /><figcaption>AI 开发与部署平台</figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/smart-manufacturing.png')} alt="智能制造移动端首页" /><figcaption>智能制造移动端</figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/manufacturing-monitor.png')} alt="制造系统部监控" /><figcaption>制造系统部监控</figcaption></figure>
+            <figure className="detail-wide"><img loading="lazy" decoding="async" {...responsiveImage('/assets/deployment-platform.jpeg')} alt="人工智能开发与部署平台视觉设计" /><figcaption>AI 开发与部署平台</figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/smart-manufacturing.png')} alt="智能制造移动端首页" /><figcaption>智能制造移动端</figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/manufacturing-monitor.png')} alt="制造系统部监控" /><figcaption>制造系统部监控</figcaption></figure>
             <div className="detail-right-stack">
-              <figure className="detail-system"><img loading="lazy" decoding="async" src={asset('/assets/ptd-system-development.png')} alt="PTD 系统开发平台完整页面设计" /><figcaption>PTD 系统开发平台</figcaption></figure>
-              <figure className="detail-brand"><img loading="lazy" decoding="async" src={asset('/assets/feishu-brand.png')} alt="飞书品牌视觉延展设计" /><figcaption>飞书品牌视觉延展</figcaption></figure>
+              <figure className="detail-system"><img loading="lazy" decoding="async" {...responsiveImage('/assets/ptd-system-development.png')} alt="PTD 系统开发平台完整页面设计" /><figcaption>PTD 系统开发平台</figcaption></figure>
+              <figure className="detail-brand"><img loading="lazy" decoding="async" {...responsiveImage('/assets/feishu-brand.png')} alt="飞书品牌视觉延展设计" /><figcaption>飞书品牌视觉延展</figcaption></figure>
             </div>
           </div>
         </div>
@@ -937,7 +969,7 @@ function App() {
         <div className="project-detail-page pdf-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>Founder Securities · Enterprise VI Visual System</span><h2>方德证券品牌视觉识别系统</h2><p>方德证券品牌视觉识别系统规范手册。</p></div><a className="detail-close" href="#projects" onClick={clearPdfPage} aria-label="关闭方德证券品牌书">×</a></header>
-          {activeDetailHash === '#fande-detail' && <ProtectedPdfViewer pages={pdfPreviewManifest.fande.pages} title="方德证券品牌视觉识别系统规范手册" initialPage={pdfPage} onPageChange={updatePdfPage} />}
+          {activeDetailHash === '#fande-detail' && <ProtectedPdfViewer pages={pdfPreviewManifest.fande.pages} mobilePages={pdfPreviewManifest.fande.mobilePages} title="方德证券品牌视觉识别系统规范手册" initialPage={pdfPage} onPageChange={updatePdfPage} />}
         </div>
       </section>
 
@@ -945,7 +977,7 @@ function App() {
         <div className="project-detail-page pdf-detail-page">
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>UI/UX · Selected Work</span><h2>部分 UI 作品集</h2><p>在线预览仅供浏览，禁止下载、打印和保存。</p></div><a className="detail-close" href="#projects" onClick={clearPdfPage} aria-label="关闭作品集预览">×</a></header>
-          {activeDetailHash === '#portfolio-detail' && <ProtectedPdfViewer pages={pdfPreviewManifest.portfolio.pages} title="熊鹏程部分 UI 作品集" initialPage={pdfPage} onPageChange={updatePdfPage} />}
+          {activeDetailHash === '#portfolio-detail' && <ProtectedPdfViewer pages={pdfPreviewManifest.portfolio.pages} mobilePages={pdfPreviewManifest.portfolio.mobilePages} title="熊鹏程部分 UI 作品集" initialPage={pdfPage} onPageChange={updatePdfPage} />}
         </div>
       </section>
 
@@ -954,8 +986,8 @@ function App() {
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>AppOS · Brand Visual Manual</span><h2>AppOS 品牌视觉手册</h2><p>围绕品牌理念、标志与字体、产品包装、摄影方向、零售体验和跨平台应用，建立完整且统一的视觉设计体系。</p></div><a className="detail-close" href="#projects" aria-label="关闭 AppOS 品牌视觉手册详情">×</a></header>
           <div className="ecommerce-detail-gallery manual-detail-gallery">
-            {[['5348', '品牌视觉手册封面'], ['5349', '品牌概念与视觉原则'], ['5350', '标志系统与字体规范'], ['5351', '产品细节偏执与包装探索'], ['5352', '编辑风格摄影'], ['5353', '沉浸式零售体验'], ['5354', '跨平台品牌应用'], ['5355', '视觉实验与品牌延展']].map(([id, title]) => <figure key={id}><img loading="lazy" decoding="async" src={asset(`/assets/IMG_${id}.jpeg`)} alt={`AppOS ${title}`} /><figcaption><strong>{title}</strong><span>AppOS Brand Visual Manual</span></figcaption></figure>)}
-            {[['5336', '君子养成'], ['5337', '喝茶问祖'], ['5338', '皮囊'], ['5339', '了凡四训'], ['5344', '富养'], ['5346', '人生很长，你慢慢走']].map(([id, title]) => <figure key={id}><img loading="lazy" decoding="async" src={asset(`/assets/IMG_${id}.jpeg`)} alt={`${title}书籍设计效果图`} /><figcaption><strong>{title}</strong><span>Book Design Showcase</span></figcaption></figure>)}
+            {[['5348', '品牌视觉手册封面'], ['5349', '品牌概念与视觉原则'], ['5350', '标志系统与字体规范'], ['5351', '产品细节偏执与包装探索'], ['5352', '编辑风格摄影'], ['5353', '沉浸式零售体验'], ['5354', '跨平台品牌应用'], ['5355', '视觉实验与品牌延展']].map(([id, title]) => <figure key={id}><img loading="lazy" decoding="async" {...responsiveImage(`/assets/IMG_${id}.jpeg`)} alt={`AppOS ${title}`} /><figcaption><strong>{title}</strong><span>AppOS Brand Visual Manual</span></figcaption></figure>)}
+            {[['5336', '君子养成'], ['5337', '喝茶问祖'], ['5338', '皮囊'], ['5339', '了凡四训'], ['5344', '富养'], ['5346', '人生很长，你慢慢走']].map(([id, title]) => <figure key={id}><img loading="lazy" decoding="async" {...responsiveImage(`/assets/IMG_${id}.jpeg`)} alt={`${title}书籍设计效果图`} /><figcaption><strong>{title}</strong><span>Book Design Showcase</span></figcaption></figure>)}
           </div>
         </div>
       </section>
@@ -965,14 +997,14 @@ function App() {
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>PPT Design · Technology & Business</span><h2>科技商务 PPT 视觉设计</h2><p>围绕人工智能、数据治理、云计算、存储设备与电商 SaaS 等主题，以清晰的信息层级、统一的科技蓝视觉语言和场景化三维表达，构建兼具专业性与传播力的商业演示体系。</p></div><a className="detail-close" href="#projects" aria-label="关闭项目详情">×</a></header>
           <div className="ppt-detail-gallery">
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-data-quality.jpg')} alt="数据治理与质量解决方案 PPT 设计" /><figcaption><strong>数据治理与质量方案</strong><span>围绕数据安全、风险评估、生命周期防护与技术支撑，梳理复杂内容层级。</span></figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-tech-support.jpg')} alt="技术支撑体系与保障措施 PPT 设计" /><figcaption><strong>技术支撑与实施保障</strong><span>将平台架构、实施路径和保障机制转化为直观、可扫描的信息图表。</span></figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-product-advantages.jpg')} alt="人工智能产品优势与机器人学习技术 PPT 设计" /><figcaption><strong>AI 产品优势与学习技术</strong><span>通过模块化卡片和流程表达，展示产品优势、抓取策略与学习闭环。</span></figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-cloud-advantages.jpg')} alt="云计算产品优势与核心技术 PPT 设计" /><figcaption><strong>云计算产品与应用场景</strong><span>统一呈现云计算底座、核心团队、技术架构及多行业应用能力。</span></figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-storage-tech.jpg')} alt="存储设备核心技术 PPT 设计" /><figcaption><strong>存储与边缘计算技术</strong><span>以指标、能力和行业方案为线索，建立高密度信息的清晰阅读节奏。</span></figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-core-architecture.png')} alt="核心技术架构 PPT 设计" /><figcaption><strong>核心技术架构</strong><span>拆解计算、存储、网络、安全与智能平台，形成系统化技术表达。</span></figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-ecommerce-saas.jpg')} alt="电商 SaaS 商业方案 PPT 设计" /><figcaption><strong>电商 SaaS 商业方案</strong><span>以暖色视觉区分商业产品线，展示商品管理、数据分析与智能运营能力。</span></figcaption></figure>
-            <figure><img loading="lazy" decoding="async" src={asset('/assets/ppt-robotics.jpg')} alt="机器人与人工智能科技商务 PPT 设计" /><figcaption><strong>机器人与人工智能</strong><span>以未来城市与智能机器人建立主视觉，完整呈现产品能力、业务场景与创新价值。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-data-quality.jpg')} alt="数据治理与质量解决方案 PPT 设计" /><figcaption><strong>数据治理与质量方案</strong><span>围绕数据安全、风险评估、生命周期防护与技术支撑，梳理复杂内容层级。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-tech-support.jpg')} alt="技术支撑体系与保障措施 PPT 设计" /><figcaption><strong>技术支撑与实施保障</strong><span>将平台架构、实施路径和保障机制转化为直观、可扫描的信息图表。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-product-advantages.jpg')} alt="人工智能产品优势与机器人学习技术 PPT 设计" /><figcaption><strong>AI 产品优势与学习技术</strong><span>通过模块化卡片和流程表达，展示产品优势、抓取策略与学习闭环。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-cloud-advantages.jpg')} alt="云计算产品优势与核心技术 PPT 设计" /><figcaption><strong>云计算产品与应用场景</strong><span>统一呈现云计算底座、核心团队、技术架构及多行业应用能力。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-storage-tech.jpg')} alt="存储设备核心技术 PPT 设计" /><figcaption><strong>存储与边缘计算技术</strong><span>以指标、能力和行业方案为线索，建立高密度信息的清晰阅读节奏。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-core-architecture.png')} alt="核心技术架构 PPT 设计" /><figcaption><strong>核心技术架构</strong><span>拆解计算、存储、网络、安全与智能平台，形成系统化技术表达。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-ecommerce-saas.jpg')} alt="电商 SaaS 商业方案 PPT 设计" /><figcaption><strong>电商 SaaS 商业方案</strong><span>以暖色视觉区分商业产品线，展示商品管理、数据分析与智能运营能力。</span></figcaption></figure>
+            <figure><img loading="lazy" decoding="async" {...responsiveImage('/assets/ppt-robotics.jpg')} alt="机器人与人工智能科技商务 PPT 设计" /><figcaption><strong>机器人与人工智能</strong><span>以未来城市与智能机器人建立主视觉，完整呈现产品能力、业务场景与创新价值。</span></figcaption></figure>
           </div>
         </div>
       </section>
@@ -982,7 +1014,7 @@ function App() {
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>Poster Cover · Visual Design</span><h2>商业海报封面设计</h2><p>覆盖企业系统上线、技术培训、流程介绍与课程传播等场景，通过清晰信息层级、主题化配色与多样视觉风格，提升内部传播的识别度与阅读效率。</p></div><a className="detail-close" href="#projects" aria-label="关闭商业海报封面设计详情">×</a></header>
           <div className="ecommerce-detail-gallery poster-detail-gallery">
-            {posterDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" src={asset(src)} alt={`${title}海报设计`} /><figcaption><strong>{title}</strong><span>Commercial Poster Cover Design</span></figcaption></figure>)}
+            {posterDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}海报设计`} /><figcaption><strong>{title}</strong><span>Commercial Poster Cover Design</span></figcaption></figure>)}
           </div>
         </div>
       </section>
@@ -1009,7 +1041,7 @@ function App() {
               ['15', '手机核心技术视觉', '以精密结构和黑蓝光影呈现芯片、影像与散热卖点。'],
               ['16', '户外电源与清洁电器', '统一深色科技风格，突出性能参数、活动节点与产品形态。'],
               ['17', '消费电子新品视觉', '以冷峻光影呈现投影、充电、存储与音频产品。'],
-            ].map(([id, title, desc]) => <figure key={id}><img loading="lazy" decoding="async" src={asset(`/assets/ecom-case-${id}.jpeg`)} alt={`${title}电商详情页视觉设计`} /><figcaption><strong>{title}</strong><span>{desc}</span></figcaption></figure>)}
+            ].map(([id, title, desc]) => <figure key={id}><img loading="lazy" decoding="async" {...responsiveImage(`/assets/ecom-case-${id}.jpeg`)} alt={`${title}电商详情页视觉设计`} /><figcaption><strong>{title}</strong><span>{desc}</span></figcaption></figure>)}
             {[
               ['IMG_5397.jpeg', '移动芯片性能视觉', '以深色科技语言整合芯片、性能参数与游戏体验，建立高性能移动终端的系列化传播视觉。'],
               ['IMG_5395.jpeg', '智能手机新品海报', '围绕手机、穿戴与影像产品，以冰感浅色体系呈现新品功能与质感卖点。'],
@@ -1017,7 +1049,7 @@ function App() {
               ['IMG_5393.jpeg', '电竞手机与音频视觉', '采用橙黑对比与硬核材质感，突出移动电竞性能、配件与产品组合。'],
               ['IMG_5399.jpeg', '科技产品主视觉探索', '以不同产品品类的海报构图和氛围光影，探索消费电子传播的多元视觉表达。'],
               ['IMG_5424.jpeg', '智能硬件商业视觉', '覆盖投影、智能家居与清洁电器等品类，以暖金光影与产品质感构建系列化商业传播视觉。'],
-            ].map(([src, title, desc]) => <figure key={src}><img loading="lazy" decoding="async" src={asset(`/assets/${src}`)} alt={`${title}海报视觉设计`} /><figcaption><strong>{title}</strong><span>{desc}</span></figcaption></figure>)}
+            ].map(([src, title, desc]) => <figure key={src}><img loading="lazy" decoding="async" {...responsiveImage(`/assets/${src}`)} alt={`${title}海报视觉设计`} /><figcaption><strong>{title}</strong><span>{desc}</span></figcaption></figure>)}
           </div>
         </div>
       </section>
@@ -1027,7 +1059,7 @@ function App() {
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>Commercial IP Display &amp; Illustration Design</span><h2>商业IP美陈&插画设计</h2><p>覆盖品牌 IP 塑造、门店空间、商业美陈、包装周边与活动插画，以统一且鲜明的视觉语言连接产品、空间与品牌体验。</p></div><a className="detail-close" href="#projects" aria-label="关闭商业IP美陈与插画设计详情">×</a></header>
           <div className="ecommerce-detail-gallery ip-display-detail-gallery">
-            {ipDisplayDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" src={asset(src)} alt={`${title}效果图`} /><figcaption><strong>{title}</strong><span>Commercial IP Display &amp; Illustration Design</span></figcaption></figure>)}
+            {ipDisplayDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}效果图`} /><figcaption><strong>{title}</strong><span>Commercial IP Display &amp; Illustration Design</span></figcaption></figure>)}
           </div>
         </div>
       </section>
@@ -1037,7 +1069,7 @@ function App() {
           <div className="rights-notice">所有作品均为原创设计，属企业专利，严禁商业用途，违法必究。</div>
           <header><div><span>Logo, Storefront &amp; Culture Wall Design</span><h2>LOGO&门店&文化墙设计</h2><p>覆盖品牌标志、门店门头、商业空间与企业文化墙设计，以清晰识别、空间秩序和场景化表达强化品牌形象与线下体验。</p></div><a className="detail-close" href="#projects" aria-label="关闭 LOGO、门店与文化墙设计详情">×</a></header>
           <div className="ecommerce-detail-gallery logo-space-detail-gallery">
-            {logoSpaceDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" src={asset(src)} alt={`${title}效果图`} /><figcaption><strong>{title}</strong><span>Logo, Storefront &amp; Culture Wall Design</span></figcaption></figure>)}
+            {logoSpaceDesigns.map(([src, title]) => <figure key={src}><img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}效果图`} /><figcaption><strong>{title}</strong><span>Logo, Storefront &amp; Culture Wall Design</span></figcaption></figure>)}
           </div>
         </div>
       </section>
@@ -1059,9 +1091,9 @@ function App() {
               ['09', '爆浆曲奇', '柔和奶咖色与巧克力流心建立精致烘焙氛围。'],
               ['10', '鳕鱼玉米浓汤', '清爽蓝黄配色传达海鲜鲜味与家庭速食便利。'],
               ['11', '海苔脆脆米饼', '蓝黄高对比突出海苔颗粒、酥脆口感与活力感。'],
-            ].map(([id, title, desc]) => <figure key={id}><img loading="lazy" decoding="async" src={asset(`/assets/packaging-case-${id}.jpeg`)} alt={`${title}包装设计`} /><figcaption><strong>{title}</strong><span>{desc}</span></figcaption></figure>)}
+            ].map(([id, title, desc]) => <figure key={id}><img loading="lazy" decoding="async" {...responsiveImage(`/assets/packaging-case-${id}.jpeg`)} alt={`${title}包装设计`} /><figcaption><strong>{title}</strong><span>{desc}</span></figcaption></figure>)}
             <figure>
-              <img loading="lazy" decoding="async" src={asset('/assets/IMG_5425.jpeg')} alt="芝士软心面包包装设计" />
+              <img loading="lazy" decoding="async" {...responsiveImage('/assets/IMG_5425.jpeg')} alt="芝士软心面包包装设计" />
               <figcaption><strong>芝士软心面包</strong><span>以明亮天空蓝和浓郁芝士黄呈现松软口感与流心卖点，强化产品的年轻化货架识别。</span></figcaption>
             </figure>
           </div>
