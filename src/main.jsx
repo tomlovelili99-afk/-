@@ -79,6 +79,21 @@ const navItems = [
   ['联系', '#contact'],
 ];
 
+const detailHashes = new Set([
+  '#power-grid-detail',
+  '#data-screen-detail',
+  '#feishu-detail',
+  '#fande-detail',
+  '#portfolio-detail',
+  '#manual-detail',
+  '#ppt-detail',
+  '#poster-detail',
+  '#ecommerce-detail',
+  '#ip-display-detail',
+  '#logo-space-detail',
+  '#packaging-detail',
+]);
+
 const strengthIconLabels = ['1', '2', '3', '4', '5', '6'];
 
 const transparentOriginalAssets = new Set([
@@ -442,6 +457,7 @@ function ProtectedPdfViewer({ pages = [], mobilePages = [], title, initialPage =
 function App() {
   const appRef = useRef(null);
   const scrollStateRef = useRef({ isScrolled: false, activeSection: '#about' });
+  const projectReturnPositionRef = useRef({ x: 0, y: 0 });
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('#about');
   const [activeDetailHash, setActiveDetailHash] = useState(() => window.location.hash);
@@ -513,6 +529,50 @@ function App() {
       window.removeEventListener('popstate', returnToProjects);
     };
   }, [activeDetailHash]);
+
+  useEffect(() => {
+    const rememberProjectPosition = () => {
+      projectReturnPositionRef.current = {
+        x: window.scrollX,
+        y: window.scrollY,
+      };
+    };
+
+    const restoreProjectPosition = (event) => {
+      event.preventDefault();
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete('pdfPage');
+      url.hash = 'projects';
+      window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
+      setActiveDetailHash('#projects');
+      setActiveSection('#projects');
+      setPdfPage(1);
+
+      const { x, y } = projectReturnPositionRef.current;
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ left: x, top: y, behavior: 'auto' });
+      });
+    };
+
+    const onDocumentClick = (event) => {
+      const link = event.target.closest?.('a[href^="#"]');
+      if (!link) return;
+
+      const hash = link.getAttribute('href');
+      if (detailHashes.has(hash)) {
+        rememberProjectPosition();
+        return;
+      }
+
+      if (hash === '#projects' && link.classList.contains('detail-close')) {
+        restoreProjectPosition(event);
+      }
+    };
+
+    document.addEventListener('click', onDocumentClick);
+    return () => document.removeEventListener('click', onDocumentClick);
+  }, []);
 
   useEffect(() => {
     const runWhenIdle = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 1200));
