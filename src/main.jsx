@@ -81,30 +81,38 @@ const navItems = [
 
 const strengthIconLabels = ['1', '2', '3', '4', '5', '6'];
 
+const transparentOriginalAssets = new Set([
+  '/assets/hero-effect-reference.webp',
+  '/assets/profile-photo-layer-1.webp',
+]);
+
 const asset = (path) => {
   if (!path.startsWith('/assets/') || path.startsWith('/assets/pdf-pages/')) return path;
+  if (transparentOriginalAssets.has(path)) return path;
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
   return `/assets/optimized/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 
 const mobileAsset = (path) => {
   if (!path.startsWith('/assets/') || path.startsWith('/assets/pdf-pages/')) return path;
+  if (transparentOriginalAssets.has(path)) return path;
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
   return `/assets/optimized/mobile/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 
 const compactAsset = (path) => {
   if (!path.startsWith('/assets/') || path.startsWith('/assets/pdf-pages/')) return path;
+  if (transparentOriginalAssets.has(path)) return path;
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
   return `/assets/optimized/compact/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 
@@ -115,11 +123,12 @@ const isMobileViewport = () => (
 const responsiveImage = (path, sizes = '(max-width: 720px) 92vw, (max-width: 1180px) 46vw, 620px') => {
   const src = asset(path);
   const mobileSrc = mobileAsset(path);
-  if (src === path || mobileSrc === path) return { src };
-  if (isMobileViewport()) return { src: mobileSrc };
+  const compactSrc = compactAsset(path);
+  if (src === path || mobileSrc === path || compactSrc === path) return { src };
+  if (isMobileViewport()) return { src: compactSrc };
   return {
     src,
-    srcSet: `${mobileSrc} 720w, ${src} 1800w`,
+    srcSet: `${compactSrc} 360w, ${mobileSrc} 540w, ${src} 1800w`,
     sizes,
   };
 };

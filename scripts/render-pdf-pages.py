@@ -22,11 +22,11 @@ PDFS = {
 RENDER_SETTINGS = {
     "portfolio": {
         "desktop": {"dpi": "360", "quality": "94"},
-        "mobile": {"dpi": "220", "quality": "84"},
+        "mobile": {"dpi": "170", "quality": "74"},
     },
     "fande": {
         "desktop": {"dpi": "160", "quality": "80"},
-        "mobile": {"dpi": "54", "quality": "68"},
+        "mobile": {"dpi": "42", "quality": "62"},
     },
 }
 PDFTOPPM = shutil.which("pdftoppm")

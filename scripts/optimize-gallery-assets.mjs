@@ -9,10 +9,10 @@ const mobileOutputDir = join(outputDir, 'mobile');
 const compactOutputDir = join(outputDir, 'compact');
 const variants = [
   { dir: outputDir, width: 1800, quality: 82, label: 'desktop' },
-  { dir: mobileOutputDir, width: 720, quality: 68, label: 'mobile' },
-  { dir: compactOutputDir, width: 480, quality: 62, label: 'compact' },
+  { dir: mobileOutputDir, width: 540, quality: 60, label: 'mobile' },
+  { dir: compactOutputDir, width: 360, quality: 54, label: 'compact' },
 ];
-const imageExts = new Set(['.jpg', '.jpeg', '.png']);
+const imageExts = new Set(['.jpg', '.jpeg', '.png', '.webp']);
 
 variants.forEach(({ dir }) => mkdirSync(dir, { recursive: true }));
 
@@ -24,16 +24,13 @@ const optimize = async (source, output, variant) => {
 
   const image = sharp(source, { failOn: 'none' }).rotate();
   const metadata = await image.metadata();
+  if (metadata.hasAlpha) return false;
   const shouldResize = metadata.width && metadata.width > variant.width;
 
   let pipeline = image;
   if (shouldResize) {
     pipeline = pipeline.resize({ width: variant.width, withoutEnlargement: true });
   }
-  if (metadata.hasAlpha) {
-    pipeline = pipeline.flatten({ background: '#f5f8ff' });
-  }
-
   await pipeline.jpeg({
     quality: variant.quality,
     mozjpeg: true,
