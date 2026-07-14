@@ -30,6 +30,9 @@ const optimize = async (source, output, variant) => {
   if (shouldResize) {
     pipeline = pipeline.resize({ width: variant.width, withoutEnlargement: true });
   }
+  if (metadata.hasAlpha) {
+    pipeline = pipeline.flatten({ background: '#f5f8ff' });
+  }
 
   await pipeline.jpeg({
     quality: variant.quality,

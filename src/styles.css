@@ -237,7 +237,7 @@ a {
   box-shadow: 0 22px 48px rgba(20, 93, 255, .34);
 }
 
-.nav-cta:hover span { transform: translateX(5px); }
+.nav-cta:hover span:last-child { transform: translateX(5px); }
 
 .primary-btn,
 .ghost-btn {
@@ -2579,7 +2579,7 @@ a {
     width: min(calc(100% - 24px), var(--max));
   }
 
-  nav {
+  .site-header nav {
     display: none;
   }
 
@@ -2665,7 +2665,17 @@ a {
   .copyright-badge {
     right: 10px;
     bottom: 10px;
-    padding: 9px 11px;
+    max-width: 170px;
+    padding: 7px 9px;
+    opacity: .86;
+  }
+
+  .copyright-badge strong {
+    font-size: 10px;
+  }
+
+  .copyright-badge span {
+    display: none;
   }
 
   .section-shell {
@@ -2681,22 +2691,59 @@ a {
   .site-header {
     height: 62px;
     border-radius: 18px;
-    padding-left: 14px;
+    padding: 0 10px 0 12px;
+    gap: 10px;
+    width: min(calc(100% - 14px), var(--max));
+    overflow: hidden;
+  }
+
+  .site-header.is-scrolled {
+    top: 8px;
+    width: min(calc(100% - 14px), var(--max));
+    height: 58px;
+    border-radius: 18px;
+  }
+
+  .brand {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 8px;
   }
 
   .brand strong {
+    overflow: hidden;
     font-size: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .brand-photo {
     width: 36px;
     height: 36px;
     border-radius: 12px;
+    flex: 0 0 auto;
   }
 
   .nav-cta {
+    flex: 0 0 42px;
+    width: 42px;
     height: 42px;
-    padding: 0 14px;
+    justify-content: center;
+    padding: 0;
+    border-radius: 14px;
+  }
+
+  .nav-cta-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .nav-cta span:last-child {
+    font-size: 20px;
   }
 
   .hero,
@@ -2704,7 +2751,37 @@ a {
   .experience,
   .projects,
   .strengths {
-    padding: 104px 18px 28px;
+    padding: 92px 18px 28px;
+  }
+
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(46px, 14vw, 58px);
+    line-height: 1.03;
+  }
+
+  .hero h1 > .hero-title-line {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-copy {
+    max-width: 100%;
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-actions {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .hero-actions .primary-btn,
+  .hero-actions .ghost-btn {
+    min-height: 50px;
+    padding: 0 18px;
   }
 
   .about,
@@ -2762,7 +2839,28 @@ a {
   }
 
   .project-detail-page > header {
+    display: block;
+    margin-bottom: 24px;
     padding-right: 0;
+  }
+
+  .project-detail-page header span {
+    display: block;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .project-detail-page header h2 {
+    font-size: clamp(28px, 9vw, 36px);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  .project-detail-page header p {
+    font-size: 14px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
   }
 
   .detail-close {

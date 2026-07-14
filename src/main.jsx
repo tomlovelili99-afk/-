@@ -729,7 +729,7 @@ function App() {
       )}
       <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
         <a className="brand" href="#top" aria-label="回到首页">
-          <img loading="eager" decoding="async" fetchPriority="high" className="brand-photo" src={asset('/assets/profile-photo-new.webp')} alt="熊鹏程形象照" />
+          <img loading="eager" decoding="async" fetchPriority="high" className="brand-photo" src="/assets/profile-photo-new.webp" alt="熊鹏程形象照" />
           <strong>{profile.name}</strong>
         </a>
         <nav aria-label="主导航">
@@ -744,8 +744,8 @@ function App() {
             </a>
           ))}
         </nav>
-        <a className="nav-cta" href={`mailto:${profile.email}`}>
-          Let's Talk
+        <a className="nav-cta" href={`mailto:${profile.email}`} aria-label="联系熊鹏程">
+          <span className="nav-cta-label">Let's Talk</span>
           <span>→</span>
         </a>
       </header>
