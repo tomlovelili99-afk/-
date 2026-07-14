@@ -19,11 +19,13 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 8% 0%, rgba(78, 129, 255, 0.2), transparent 33rem),
     radial-gradient(circle at 92% 8%, rgba(112, 225, 255, 0.22), transparent 34rem),
@@ -2662,6 +2664,14 @@ a {
 }
 
 @media (max-width: 720px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   .copyright-badge {
     right: 10px;
     bottom: 10px;
@@ -2679,7 +2689,8 @@ a {
   }
 
   .section-shell {
-    width: min(calc(100% - 20px), var(--max));
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
     border-radius: 22px;
     margin-bottom: 16px;
   }
@@ -2751,47 +2762,77 @@ a {
   .experience,
   .projects,
   .strengths {
-    padding: 92px 18px 28px;
+    padding: 82px 16px 24px;
+    max-width: 100%;
+  }
+
+  .hero {
+    min-height: auto;
+    gap: 22px;
+    overflow: hidden;
+  }
+
+  .hero-content,
+  .about-copy,
+  .portrait-card,
+  .project-grid,
+  .project-subgrid,
+  .compact-projects {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hero-content {
+    width: calc(100vw - 52px);
+    max-width: calc(100vw - 52px);
   }
 
   .hero h1 {
     max-width: 100%;
-    font-size: clamp(46px, 14vw, 58px);
-    line-height: 1.03;
+    font-size: clamp(38px, 11.2vw, 48px);
+    line-height: 1.08;
   }
 
   .hero h1 > .hero-title-line {
     white-space: normal;
     overflow-wrap: anywhere;
+    word-break: keep-all;
   }
 
   .hero-copy {
-    max-width: 100%;
-    margin-top: 20px;
-    font-size: 16px;
-    line-height: 1.65;
+    max-width: calc(100vw - 52px);
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.7;
     overflow-wrap: anywhere;
+    word-break: normal;
   }
 
   .hero-actions {
     gap: 10px;
     flex-wrap: wrap;
+    width: calc(100vw - 52px);
+    max-width: calc(100vw - 52px);
+    min-width: 0;
   }
 
   .hero-actions .primary-btn,
   .hero-actions .ghost-btn {
+    width: calc(100vw - 52px);
+    max-width: calc(100vw - 52px);
+    min-width: 0;
     min-height: 50px;
     padding: 0 18px;
   }
 
   .hero-actions .primary-btn {
-    flex: 1 1 100%;
+    flex: 0 0 calc(100vw - 52px);
     justify-content: center;
     border-radius: 14px;
   }
 
   .hero-actions .ghost-btn {
-    flex: 1 1 100%;
+    flex: 0 0 calc(100vw - 52px);
     justify-content: center;
     border-radius: 14px;
     background: rgba(255, 255, 255, .68);
@@ -2802,6 +2843,10 @@ a {
   .projects,
   .strengths {
     padding-top: 28px;
+  }
+
+  .about {
+    gap: 18px;
   }
 
   .hero-stats,
@@ -3063,7 +3108,7 @@ a {
   .hero-stats {
     display: flex;
     gap: 8px;
-    margin-top: 28px;
+    margin-top: 20px;
     padding: 8px;
     overflow-x: auto;
     border: 1px solid rgba(20, 93, 255, .1);
@@ -3080,7 +3125,7 @@ a {
   }
 
   .hero-stats div {
-    flex: 0 0 43%;
+    flex: 0 0 calc(50% - 4px);
     min-width: 122px;
     padding: 12px 10px;
     border-left: 0;
@@ -3103,19 +3148,59 @@ a {
   }
 
   .hero-panel-image {
-    min-height: 340px;
+    min-height: 0;
+    aspect-ratio: 1.72 / 1;
+    margin-top: 4px;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .hero-panel-image::before {
+    inset: 8% 4% 6%;
+    border-radius: 28px;
+    filter: blur(8px);
+  }
+
+  .hero-panel-image::after {
+    left: 12%;
+    right: 10%;
+    bottom: 4%;
+    height: 10%;
+    filter: blur(22px);
   }
 
   .hero-panel-image img {
-    width: 112%;
+    width: 78%;
     max-width: none;
+    max-height: 100%;
+    transform: none;
+    animation: none;
+    object-fit: contain;
   }
 
   .particle-earth {
-    left: 4%;
-    top: 61%;
-    width: 72px;
-    height: 72px;
+    left: 8%;
+    top: 68%;
+    width: 52px;
+    height: 52px;
+    opacity: .78;
+  }
+
+  .portrait {
+    width: min(100%, 420px);
+    justify-self: center;
+    aspect-ratio: 4 / 3.15;
+    border-radius: 20px;
+  }
+
+  .portrait::before {
+    inset: 10px;
+    border-radius: 16px;
+  }
+
+  .portrait img {
+    object-fit: cover;
+    object-position: center 18%;
   }
 
   .panel-screen {
