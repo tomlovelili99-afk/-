@@ -86,7 +86,7 @@ const asset = (path) => {
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
   return `/assets/optimized/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
 
@@ -95,18 +95,45 @@ const mobileAsset = (path) => {
   const extensionIndex = path.lastIndexOf('.');
   if (extensionIndex === -1) return path;
   const extension = path.slice(extensionIndex + 1).toLowerCase();
-  if (!['jpg', 'jpeg', 'png'].includes(extension)) return path;
+  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
   return `/assets/optimized/mobile/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
 };
+
+const compactAsset = (path) => {
+  if (!path.startsWith('/assets/') || path.startsWith('/assets/pdf-pages/')) return path;
+  const extensionIndex = path.lastIndexOf('.');
+  if (extensionIndex === -1) return path;
+  const extension = path.slice(extensionIndex + 1).toLowerCase();
+  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension)) return path;
+  return `/assets/optimized/compact/${path.slice('/assets/'.length, extensionIndex)}.jpg`;
+};
+
+const isMobileViewport = () => (
+  typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
+);
 
 const responsiveImage = (path, sizes = '(max-width: 720px) 92vw, (max-width: 1180px) 46vw, 620px') => {
   const src = asset(path);
   const mobileSrc = mobileAsset(path);
   if (src === path || mobileSrc === path) return { src };
+  if (isMobileViewport()) return { src: mobileSrc };
   return {
     src,
-    srcSet: `${mobileSrc} 960w, ${src} 1800w`,
+    srcSet: `${mobileSrc} 720w, ${src} 1800w`,
     sizes,
+  };
+};
+
+const thumbnailImage = (path) => {
+  const src = asset(path);
+  const mobileSrc = mobileAsset(path);
+  const compactSrc = compactAsset(path);
+  if (src === path || mobileSrc === path || compactSrc === path) return { src };
+  if (isMobileViewport()) return { src: compactSrc };
+  return {
+    src,
+    srcSet: `${compactSrc} 480w, ${mobileSrc} 720w, ${src} 1800w`,
+    sizes: '(max-width: 720px) 46vw, (max-width: 1180px) 32vw, 360px',
   };
 };
 
@@ -384,8 +411,10 @@ function ProtectedPdfViewer({ pages = [], mobilePages = [], title, initialPage =
       </div>
       <div className="pdf-image-stage" onContextMenu={blockPdfActions}>
         <img
+          key={pageSrc}
           src={pageSrc}
           alt={`${title}，第 ${pageNumber} 页`}
+          fetchPriority="high"
           draggable="false"
           onContextMenu={blockPdfActions}
           onDragStart={blockPdfActions}
@@ -475,6 +504,30 @@ function App() {
       window.removeEventListener('popstate', returnToProjects);
     };
   }, [activeDetailHash]);
+
+  useEffect(() => {
+    const runWhenIdle = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 1200));
+    const cancelIdle = window.cancelIdleCallback || window.clearTimeout;
+    const preload = (src) => {
+      if (!src) return;
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = src;
+    };
+    const taskId = runWhenIdle(() => {
+      const mobile = window.matchMedia('(max-width: 720px)').matches;
+      const portfolioPages = mobile && pdfPreviewManifest.portfolio.mobilePages ? pdfPreviewManifest.portfolio.mobilePages : pdfPreviewManifest.portfolio.pages;
+      const fandePages = mobile && pdfPreviewManifest.fande.mobilePages ? pdfPreviewManifest.fande.mobilePages : pdfPreviewManifest.fande.pages;
+      const requestedPage = Number(new URLSearchParams(window.location.search).get('pdfPage')) || 1;
+      [
+        portfolioPages[0],
+        portfolioPages[requestedPage - 1],
+        fandePages[0],
+        fandePages[requestedPage - 1],
+      ].filter(Boolean).forEach(preload);
+    });
+    return () => cancelIdle(taskId);
+  }, []);
 
   const updatePdfPage = (nextPage) => {
     const url = new URL(window.location.href);
@@ -837,7 +890,7 @@ function App() {
                     loading="lazy"
                     decoding="async"
                     className="project-image"
-                    src={asset(['/assets/power-smart-brain.webp', '/assets/tcm-university-dashboard.webp', '/assets/annual-review-ppt.png'][index])}
+                    {...thumbnailImage(['/assets/power-smart-brain.webp', '/assets/tcm-university-dashboard.webp', '/assets/annual-review-ppt.png'][index])}
                     alt={['供用电智慧大脑数据大屏设计', '中医药大学第二课堂数据大屏设计', '年终总结 PPT 视觉设计展示'][index]}
                   />
                 ) : (
@@ -862,7 +915,7 @@ function App() {
                 {[
                   ['/assets/smart-manufacturing.png', '智能制造移动端首页'],
                   ['/assets/manufacturing-monitor.png', '制造系统部监控'],
-                ].map(([src, alt]) => <a href={asset(src)} target="_blank" rel="noreferrer" key={src}><img loading="lazy" decoding="async" src={asset(src)} alt={alt} /></a>)}
+                ].map(([src, alt]) => <a href={asset(src)} target="_blank" rel="noreferrer" key={src}><img loading="lazy" decoding="async" {...thumbnailImage(src)} alt={alt} /></a>)}
               </div>
               <div className="project-info"><span>Feishu · Brand & Product Design</span><h3>飞书品牌与智能制造平台设计</h3><p>覆盖飞书品牌视觉延展、AI 开发部署平台、智能制造移动端与系统监控，从品牌识别到业务可视化构建统一的蓝色科技视觉体系。</p></div>
             </article>
@@ -871,7 +924,7 @@ function App() {
                 <article className={`project-card ${project.className} ${index < 2 ? 'project-clickable' : ''}`} key={project.title}>
                   {index < 2 && <a className="project-entry" href={index === 0 ? '#ppt-detail' : '#ecommerce-detail'} aria-label={index === 0 ? '查看科技商务 PPT 视觉设计完整项目' : '查看电商产品视觉设计完整项目'} />}
                   <div className="project-visual">
-                    {index < 2 ? <img loading="lazy" decoding="async" className={`project-image ${index === 0 ? 'work-highlights-image' : ''}`} src={asset(index === 0 ? '/assets/work-highlights.webp' : '/assets/ecommerce-cover.jpg')} alt={index === 0 ? '工作亮点与成效视觉设计展示' : '蓝色饮品电商主图视觉设计'} /> : <><div className="mock-window"><span /><span /><span /></div><div className="visual-lines"><i /><i /><i /></div><b>{String(index + 3).padStart(2, '0')}</b></>}
+                    {index < 2 ? <img loading="lazy" decoding="async" className={`project-image ${index === 0 ? 'work-highlights-image' : ''}`} {...thumbnailImage(index === 0 ? '/assets/work-highlights.webp' : '/assets/ecommerce-cover.jpg')} alt={index === 0 ? '工作亮点与成效视觉设计展示' : '蓝色饮品电商主图视觉设计'} /> : <><div className="mock-window"><span /><span /><span /></div><div className="visual-lines"><i /><i /><i /></div><b>{String(index + 3).padStart(2, '0')}</b></>}
                   </div>
                   <div className="project-info"><span>{project.type}</span><h3>{project.title}</h3><p>{project.desc}</p></div>
                 </article>
@@ -879,7 +932,7 @@ function App() {
               <article className="poster-showcase project-clickable">
                 <a className="project-entry" href="#poster-detail" aria-label="查看商业海报封面设计完整项目" />
                 <div className="poster-gallery">
-                  <img loading="lazy" decoding="async" src={asset('/assets/it-service-center-application-flow.png')} alt="IT 服务中心申请流程海报封面设计" />
+                  <img loading="lazy" decoding="async" {...thumbnailImage('/assets/it-service-center-application-flow.png')} alt="IT 服务中心申请流程海报封面设计" />
                 </div>
                 <div className="project-info"><span>Poster Cover · Visual Design</span><h3>商业海报封面设计</h3><p>围绕 IT 服务中心申请流程，以清爽蓝绿色调、立体科技视觉和清晰信息层级完成课程海报表达。</p></div>
               </article>
@@ -906,7 +959,7 @@ function App() {
                   {title === '企业VI视觉系统' && <a className="showcase-entry" href="#fande-detail" aria-label="查看方德证券品牌视觉识别系统规范手册" />}
                   {title === '商业IP美陈&插画设计' && <a className="showcase-entry" href="#ip-display-detail" aria-label="查看商业IP美陈与插画设计完整项目" />}
                   {title === 'LOGO&门店&文化墙设计' && <a className="showcase-entry" href="#logo-space-detail" aria-label="查看 LOGO、门店与文化墙设计完整项目" />}
-                  {title === '手册书籍设计' ? <div className="manual-preview"><img loading="lazy" decoding="async" src={asset(src)} alt="AppOS 品牌视觉手册封面" /><img loading="lazy" decoding="async" src={asset('/assets/IMG_5349.jpeg')} alt="AppOS 品牌概念与视觉原则展示" /></div> : <img loading="lazy" decoding="async" src={asset(src)} alt={title} />}
+                  {title === '手册书籍设计' ? <div className="manual-preview"><img loading="lazy" decoding="async" {...thumbnailImage(src)} alt="AppOS 品牌视觉手册封面" /><img loading="lazy" decoding="async" {...thumbnailImage('/assets/IMG_5349.jpeg')} alt="AppOS 品牌概念与视觉原则展示" /></div> : <img loading="lazy" decoding="async" {...thumbnailImage(src)} alt={title} />}
                   <figcaption><strong>{title}</strong><span>{type}</span></figcaption>
                 </figure>
               ))}
@@ -926,7 +979,7 @@ function App() {
           <div className="dashboard-detail-gallery">
             {powerGridScreens.map(([src, title]) => (
               <figure className="dashboard-feature" key={src}>
-                <img loading="lazy" decoding="async" src={asset(src)} alt={`${title}效果图`} />
+                <img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}效果图`} />
                 <figcaption><strong>{title}</strong><span>Power Grid UI/UX Dashboard</span></figcaption>
               </figure>
             ))}
@@ -941,7 +994,7 @@ function App() {
           <div className="dashboard-detail-gallery">
             {dataScreens.map(([src, title], index) => (
               <figure className={index === 0 ? 'dashboard-feature' : ''} key={src}>
-                <img loading="lazy" decoding="async" src={asset(src)} alt={`${title}大屏设计效果图`} />
+                <img loading="lazy" decoding="async" {...responsiveImage(src)} alt={`${title}大屏设计效果图`} />
                 <figcaption><strong>{title}</strong><span>Data Visualization Dashboard</span></figcaption>
               </figure>
             ))}

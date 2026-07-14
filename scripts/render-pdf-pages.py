@@ -26,7 +26,7 @@ RENDER_SETTINGS = {
     },
     "fande": {
         "desktop": {"dpi": "160", "quality": "80"},
-        "mobile": {"dpi": "72", "quality": "74"},
+        "mobile": {"dpi": "54", "quality": "68"},
     },
 }
 PDFTOPPM = shutil.which("pdftoppm")

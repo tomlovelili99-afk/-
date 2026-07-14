@@ -6,11 +6,13 @@ const root = process.cwd();
 const assetsDir = join(root, 'public', 'assets');
 const outputDir = join(assetsDir, 'optimized');
 const mobileOutputDir = join(outputDir, 'mobile');
+const compactOutputDir = join(outputDir, 'compact');
 const variants = [
   { dir: outputDir, width: 1800, quality: 82, label: 'desktop' },
-  { dir: mobileOutputDir, width: 960, quality: 76, label: 'mobile' },
+  { dir: mobileOutputDir, width: 720, quality: 68, label: 'mobile' },
+  { dir: compactOutputDir, width: 480, quality: 62, label: 'compact' },
 ];
-const imageExts = new Set(['.jpg', '.jpeg', '.png']);
+const imageExts = new Set(['.jpg', '.jpeg', '.png', '.webp']);
 
 variants.forEach(({ dir }) => mkdirSync(dir, { recursive: true }));
 
